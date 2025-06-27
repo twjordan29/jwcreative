@@ -116,7 +116,7 @@
 
       <!-- Main Content -->
       <main class="main-content">
-        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <button class="menu-toggle sidebar" onclick="toggleSidebar()">☰</button>
 
         <!-- Blog Section -->
         <section class="blog-section">
@@ -372,8 +372,6 @@
           return articleDiv;
         }
 
-        // Remove the createExcerpt function since we now get clean excerpts from the API
-
         showError(isNewCategory) {
           const errorMessage =
             '<div class="error-message">Unable to load articles at this time. Please try again later.</div>';
@@ -396,42 +394,46 @@
         }
       }
 
-      // Other existing functions
-      function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        sidebar.classList.toggle("active");
-      }
-
-      // Close sidebar when clicking outside on mobile
-      document.addEventListener("click", function (event) {
-        const sidebar = document.getElementById("sidebar");
+      // Initialize everything when DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Setup sidebar toggle with event listener
         const menuToggle = document.querySelector(".menu-toggle");
+        const sidebar = document.querySelector(".sidebar");
 
-        if (
-          window.innerWidth <= 768 &&
-          !sidebar.contains(event.target) &&
-          !menuToggle.contains(event.target) &&
-          sidebar.classList.contains("active")
-        ) {
-          sidebar.classList.remove("active");
+        if (menuToggle && sidebar) {
+          menuToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("active");
+          });
         }
-      });
 
-      // Smooth scrolling for navigation links
-      document.querySelectorAll(".nav-link").forEach((link) => {
-        link.addEventListener("click", function (e) {
-          if (this.getAttribute("href").startsWith("#")) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute("href"));
-            if (target) {
-              target.scrollIntoView({ behavior: "smooth" });
-            }
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function (event) {
+          if (
+            window.innerWidth <= 768 &&
+            sidebar &&
+            menuToggle &&
+            !sidebar.contains(event.target) &&
+            !menuToggle.contains(event.target) &&
+            sidebar.classList.contains("active")
+          ) {
+            sidebar.classList.remove("active");
           }
         });
-      });
 
-      // Initialize blog manager when DOM is loaded
-      document.addEventListener("DOMContentLoaded", () => {
+        // Smooth scrolling for navigation links
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.addEventListener("click", function (e) {
+            if (this.getAttribute("href").startsWith("#")) {
+              e.preventDefault();
+              const target = document.querySelector(this.getAttribute("href"));
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth" });
+              }
+            }
+          });
+        });
+
+        // Initialize blog manager
         new BlogManager();
       });
     </script>

@@ -659,11 +659,29 @@
         }
       }
 
-      // Existing sidebar functions
+      // Fixed toggleSidebar function
       function toggleSidebar() {
-        const sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("active");
+        const sidebar = document.querySelector(".sidebar"); // Changed from getElementById to querySelector
+        if (sidebar) {
+          sidebar.classList.toggle("active");
+        }
       }
+
+      // Also update the click outside handler
+      document.addEventListener("click", function (event) {
+        const sidebar = document.querySelector(".sidebar"); // Changed here too
+        const menuToggle = document.querySelector(".menu-toggle");
+
+        if (
+          window.innerWidth <= 768 &&
+          sidebar &&
+          !sidebar.contains(event.target) &&
+          !menuToggle.contains(event.target) &&
+          sidebar.classList.contains("active")
+        ) {
+          sidebar.classList.remove("active");
+        }
+      });
 
       // Close sidebar when clicking outside on mobile
       document.addEventListener("click", function (event) {
