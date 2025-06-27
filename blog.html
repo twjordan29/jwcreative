@@ -358,25 +358,21 @@
           });
 
           articleDiv.innerHTML = `
-            <h3 class="blog-title">
-              <a href="article.html?id=${article.id}">${article.title}</a>
-            </h3>
-            <p class="blog-excerpt">${this.createExcerpt(article.content)}</p>
-            <div class="blog-tags">${tags}</div>
-            <div class="blog-footer">
-              <span class="read-time">${article.read_time}</span>
-              <span class="post-date">${date}</span>
-            </div>
-          `;
+      <h3 class="blog-title">
+        <a href="article.html?id=${article.id}">${article.title}</a>
+      </h3>
+      <p class="blog-excerpt">${article.excerpt}</p>
+      <div class="blog-tags">${tags}</div>
+      <div class="blog-footer">
+        <span class="read-time">${article.read_time}</span>
+        <span class="post-date">${date}</span>
+      </div>
+    `;
 
           return articleDiv;
         }
 
-        createExcerpt(text, wordLimit = 30) {
-          const words = text.trim().split(/\s+/);
-          if (words.length <= wordLimit) return text;
-          return words.slice(0, wordLimit).join(" ") + "...";
-        }
+        // Remove the createExcerpt function since we now get clean excerpts from the API
 
         showError(isNewCategory) {
           const errorMessage =

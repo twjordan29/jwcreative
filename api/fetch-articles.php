@@ -24,6 +24,30 @@ function estimateReadTime($content, $wpm = 225) {
     return "{$minutes} min read";
 }
 
+// Create clean excerpt from content
+function createExcerpt($content, $length = 150) {
+    // Strip HTML tags first
+    $cleanContent = strip_tags($content);
+    
+    // Remove extra whitespace and normalize
+    $cleanContent = preg_replace('/\s+/', ' ', trim($cleanContent));
+    
+    // Create excerpt
+    if (strlen($cleanContent) <= $length) {
+        return $cleanContent;
+    }
+    
+    // Cut at word boundary
+    $excerpt = substr($cleanContent, 0, $length);
+    $lastSpace = strrpos($excerpt, ' ');
+    
+    if ($lastSpace !== false) {
+        $excerpt = substr($excerpt, 0, $lastSpace);
+    }
+    
+    return $excerpt . '...';
+}
+
 // Build query with optional category filter
 $whereClause = "";
 $params = [];
@@ -75,13 +99,20 @@ if ($stmt->execute()) {
     $articles = [];
 
     while ($row = $result->fetch_assoc()) {
-        // Sanitize fields
-        $sanitized = array_map('htmlspecialchars', $row);
+        // Create clean article data
+        $article = [
+            'id' => (int)$row['id'],
+            'title' => htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8'),
+            'excerpt' => createExcerpt($row['content']), // Clean excerpt without HTML
+            'author' => htmlspecialchars($row['author'], ENT_QUOTES, 'UTF-8'),
+            'tags' => htmlspecialchars($row['tags'], ENT_QUOTES, 'UTF-8'),
+            'category' => htmlspecialchars($row['category'], ENT_QUOTES, 'UTF-8'),
+            'date_posted' => $row['date_posted'],
+            'date_updated' => $row['date_updated'],
+            'read_time' => estimateReadTime($row['content'])
+        ];
 
-        // Add read time (calculated from content)
-        $sanitized['read_time'] = estimateReadTime($row['content']);
-
-        $articles[] = $sanitized;
+        $articles[] = $article;
     }
 
     // Calculate pagination info
